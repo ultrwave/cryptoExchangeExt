@@ -1,0 +1,273 @@
+@import "../styles/fonts";
+@import "../styles/reset";
+@import "../styles/variables";
+
+body {
+  color: $darkGray;
+  background-color: $lightGray;
+}
+
+#popup {
+  /* Wireframe -- Mobile */
+  position: relative;
+  width: 360px;
+  height: 600px;
+
+  background: #FFFFFF;
+
+  h1 {
+    position: absolute;
+    width: 297px;
+    height: 48px;
+    left: 16px;
+    top: 64px;
+
+    font-family: Roboto, sans-serif;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 40px;
+    line-height: 120%;
+    /* identical to box height, or 48px */
+
+    display: flex;
+    align-items: center;
+
+    color: #282828;
+  }
+
+  h2 {
+    /* Exchange fast and easy */
+
+    position: absolute;
+    width: 211px;
+    height: 20px;
+    left: 16px;
+    top: 126px;
+
+    font-family: Roboto, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 100%;
+    /* identical to box height, or 20px */
+
+    display: flex;
+    align-items: center;
+
+    color: #282828;
+  }
+
+  .field {
+    position: absolute;
+    width: 328px;
+    height: 50px;
+    left: 16px;
+    background: #F6F7F8;
+    border: 1px solid #E3EBEF;
+    box-sizing: border-box;
+    border-radius: 5px;
+    font-family: Roboto, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 23px;
+    padding-left: 16px;
+
+    input {
+      background: none;
+    }
+
+    .selectCurrency {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      &:hover {
+        cursor: $customCursor;
+      }
+    }
+  }
+
+  .from {
+    top: 206px;
+  }
+
+  .to {
+    top: 312px;
+  }
+
+  .address {
+    top: 389.12px;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  .swap {
+    position: absolute;
+    top: 275px;
+    left: 320px;
+    transform: rotate(90deg);
+    filter: invert(62%) sepia(24%) saturate(1046%) hue-rotate(121deg) brightness(101%) contrast(94%);
+    cursor: $customCursor;
+  }
+
+  .inputCross {
+    position: absolute;
+    top: 337px;
+    left: 50px;
+    width: 150px;
+    border: 1px solid $lightGray;
+  }
+
+  .exchangeBtn {
+    top: 74.5%;
+    margin-top: 5px;
+    background: $brandColor;
+    padding-left: 0;
+    display: flex;
+    justify-content: center;
+    transition: 0.2s all;
+
+    &:hover {
+      opacity: 0.8;
+      cursor: $customCursor;
+    }
+
+    span {
+      font-family: Roboto, sans-serif;
+      font-style: normal;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 120%;
+      /* or 19px */
+
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+
+      color: #FFFFFF;
+    }
+  }
+
+  .errorMsg {
+    position: absolute;
+    top: 85%;
+    left: 16px;
+    display: flex;
+    justify-content: center;
+    width: 328px;
+    height: 23px;
+
+    font-family: Roboto, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+
+    color: #E03F3F;
+  }
+
+}
+
+.field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .line {
+    width: 30px;
+    height: 0;
+    left: 178px;
+
+    border: 1px solid #E3EBEF;
+    transform: rotate(90deg);
+  }
+
+  .currTicker {
+    margin-left: 10px;
+    width: 36px;
+    overflow: hidden;
+  }
+
+  .currName {
+    margin-left: 10px;
+    color: $lightGray;
+    overflow: hidden;
+  }
+
+  .downArrow {
+    margin-left: 5px;
+    transition: 0.1s all;
+
+    &.active {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.dropdown {
+  width: 270px;
+  position: absolute;
+  left: 60px;
+  top: 50px;
+  z-index: 99;
+  display: inline-block;
+  border: 1px solid #E3EBEF;
+
+  .search {
+    height: 50px;
+    left: 16px;
+    background: #f6f7f8;
+    border: 1px solid #e3ebef;
+    box-sizing: border-box;
+    border-radius: 5px;
+    font-family: Roboto,sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 23px;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    img {
+      cursor: $customCursor;
+    }
+  }
+  .dropDownItems {
+    .searchItem {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: 50px;
+      padding-left: 10px;
+      background: #f6f7f8;
+      transition: 0.2s all;
+
+      .currTicker {
+        width: 60px;
+      }
+
+      &:hover {
+        background: $brandColor;
+        cursor: $customCursor;
+        .currName {
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+.smallFont {
+  font-size: 3vw;
+}
+

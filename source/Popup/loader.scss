@@ -1,0 +1,64 @@
+.dimScreen {
+  position:fixed;
+  padding:0;
+  margin:0;
+  transition: 0.3s all;
+
+  top:0;
+  left:0;
+
+  width: 100%;
+  height: 100%;
+  background:rgba(255,255,255,0.6);
+
+  z-index: 999;
+  opacity: 0.6;
+
+  -webkit-animation: fadein 0.3s; /* Safari, Chrome and Opera > 12.1 */
+  -moz-animation: fadein 0.3s; /* Firefox < 16 */
+  -ms-animation: fadein 0.3s; /* Internet Explorer */
+  -o-animation: fadein 0.3s; /* Opera < 12.1 */
+  animation: fadein 0.3s;
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 0.6; }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 0.6; }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 0.6; }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 0.6; }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 0.6; }
+}
+
+.hideLoader {
+  opacity: 0.0;
+  transition: 0.3s all;
+}
+
+.loader {
+  position: fixed; /* or absolute */
+  top: 250px;
+  left: 50%;
+  transition: 0.3s all;
+  transform: translate(-50%, -50%);
+}
