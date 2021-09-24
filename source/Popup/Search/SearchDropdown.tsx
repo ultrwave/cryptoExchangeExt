@@ -10,7 +10,7 @@ type DropdownPropsType = {
   findCurrenciesCallback(searchValue: string): Array<CurrencyResponseType>;
 };
 
-const Dropdown = ({
+const SearchDropdown = ({
   selectedCurr,
   onBlurCallback,
   findCurrenciesCallback,
@@ -80,4 +80,4 @@ const Dropdown = ({
   );
 };
 
-export default Dropdown;
+export default SearchDropdown;

@@ -3,7 +3,7 @@ import '../styles.scss';
 import {useDispatch, useSelector} from 'react-redux';
 import {useState} from 'react';
 import {RootStateType} from '../../redux/store';
-import Dropdown from '../Search/Dropdown';
+import SearchDropdown from '../Search/SearchDropdown';
 import {
   CurrencyResponseType,
   selectCurrency,
@@ -33,7 +33,7 @@ const InputField = ({
   const appStatus = useSelector((state: RootStateType) => state.app.status
   )
 
-  const displayValue = !value || (appStatus !== 'idle') ? '' : value
+  const displayValue = !value || (appStatus !== 'idle')? '' : value
 
   const setCurrency = (field: FieldType) => (currency: string) => {
     dispatch(selectCurrency({field, value: currency}));
@@ -50,7 +50,7 @@ const InputField = ({
 
   return (
     <div className={`field ${fieldType}`}>
-      <input value={displayValue} type="number" step="any" {...restProps} />
+      <input value={fieldType === 'from'? value : displayValue} type="number" step="any" {...restProps} />
       <div
         onClick={() => setShowDropdown(!showDropdown)}
         className={'selectCurrency'}
@@ -72,7 +72,7 @@ const InputField = ({
         />
       </div>
       {showDropdown && (
-        <Dropdown
+        <SearchDropdown
           onBlurCallback={() => setShowDropdown(false)}
           selectedCurr={curr}
           setCurrencyCallback={setCurrency(fieldType)}

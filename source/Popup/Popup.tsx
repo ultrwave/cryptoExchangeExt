@@ -36,12 +36,7 @@ const Popup: React.FC = () => {
     const results = [];
     for (let i = 0; i < availableCurrencies.length; i += 1) {
       const curr = availableCurrencies[i];
-      const currName = curr.name.toLowerCase();
-      const currTicker = curr.ticker.toLowerCase();
-      if (
-        currName.includes(searchValue.toLowerCase()) ||
-        currTicker.includes(searchValue.toLowerCase())
-      ) {
+      if (`${curr.name} ${curr.ticker}`.toLowerCase().includes(searchValue.toLowerCase())) {
         results.push(curr);
       }
       if (results.length === 3) {
@@ -51,24 +46,26 @@ const Popup: React.FC = () => {
     return results;
   };
 
-  const onChangeCallback = (e: ChangeEvent<HTMLInputElement>) => {
-    dispatch(setAmount({amount: Number(e.currentTarget.value)}));
-  };
-
+  let timeoutId: number;
   useEffect(() => {
-    let timeoutId: number;
     if (amount && render) {
-      timeoutId = +setTimeout(() => dispatch(getEstimateAmountThunk()), 200);
+      timeoutId = +setTimeout(() => dispatch(getEstimateAmountThunk()), 150);
     }
     setRender(!!amount);
     return () => clearTimeout(timeoutId);
   }, [amount]);
 
+  const onChangeCallback = (e: ChangeEvent<HTMLInputElement>) => {
+    clearTimeout(timeoutId)
+    dispatch(setAmount({amount: Number(e.currentTarget.value)}));
+  };
+
   const onKeyPress = (e: React.KeyboardEvent) => {
+    clearTimeout(timeoutId)
     e.key === 'Enter' && dispatch(getEstimateAmountThunk());
   };
 
-  const onClickSwitch = () => {
+  const onClickSwap = () => {
     dispatch(switchCurrencies());
     dispatch(updateDataThunk());
   };
@@ -76,8 +73,12 @@ const Popup: React.FC = () => {
   const fromInputProps = {
     onChange: onChangeCallback,
     onKeyPress,
-    onBlur: () => dispatch(getEstimateAmountThunk()),
+    onBlur: () => {
+      clearTimeout(timeoutId)
+      dispatch(getEstimateAmountThunk())
+    }
   };
+
   const toInputProps = {readOnly: true};
 
   return (
@@ -92,7 +93,7 @@ const Popup: React.FC = () => {
       />
       <img
         className={'swap'}
-        onClick={onClickSwitch}
+        onClick={onClickSwap}
         src="../assets/icons/swap.svg"
         alt="swap"
         height={'20px'}
