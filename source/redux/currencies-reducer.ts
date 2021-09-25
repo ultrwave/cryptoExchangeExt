@@ -20,10 +20,12 @@ export type CurrencyResponseType = {
   supportsFixedRate: boolean;
 };
 
+export type AmountDisplayType = number | ''
+
 type PageStateType = {
   from: string;
   to: string;
-  amount: number;
+  amount: AmountDisplayType
   minAmount: number;
   estAmount: number;
   availableCurrencies: Array<CurrencyResponseType>;
@@ -71,8 +73,10 @@ const currenciesReducer = (
       return {...state, from: to, to: from, minAmount: 0, estAmount: 0};
     }
 
-    case SET_AMOUNT:
-      return {...state, amount: action.payload.amount};
+    case SET_AMOUNT: {
+      const {amount} = action.payload
+      return {...state, amount};
+    }
 
     case SET_MINIMAL_AMOUNT:
       return {...state, minAmount: action.payload.minAmount};
@@ -95,7 +99,7 @@ export const selectCurrency = (payload: {
 
 export const switchCurrencies = () => ({type: SWITCH_CURRENCIES} as const);
 
-export const setAmount = (payload: {amount: number}) =>
+export const setAmount = (payload: {amount: AmountDisplayType}) =>
   ({type: SET_AMOUNT, payload} as const);
 
 export const setMinimalAmount = (payload: {minAmount: number}) =>
@@ -113,7 +117,8 @@ export const getCurrenciesThunk = (): AppThunk => async (dispatch) => {
 
 export const getEstimateAmountThunk =
   (): AppThunk => async (dispatch, getState) => {
-    const {from, to, amount, minAmount} = getState().currencies;
+    const {from, to, minAmount} = getState().currencies;
+    const amount = +getState().currencies.amount;
     dispatch(setError({error: null}));
     try {
       if (amount < minAmount) {

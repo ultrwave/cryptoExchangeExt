@@ -1,27 +1,23 @@
 import * as React from 'react';
+import {useState} from 'react';
 import '../styles.scss';
 import {useDispatch, useSelector} from 'react-redux';
-import {useState} from 'react';
 import {RootStateType} from '../../redux/store';
 import SearchDropdown from '../Search/SearchDropdown';
-import {
-  CurrencyResponseType,
-  selectCurrency,
-} from '../../redux/currencies-reducer';
+import {AmountDisplayType, selectCurrency} from '../../redux/currencies-reducer';
 import {updateDataThunk} from '../../redux/app-reducer';
 
 type FieldType = 'from' | 'to';
 
 type InputFieldProps = {
   fieldType: FieldType;
-  value: number;
-  findCurrenciesCallback(searchValue: string): Array<CurrencyResponseType>;
+  value: AmountDisplayType;
+  readOnly?: boolean
 };
 
 const InputField = ({
   value,
   fieldType,
-  findCurrenciesCallback,
   ...restProps
 }: InputFieldProps): JSX.Element => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -33,7 +29,7 @@ const InputField = ({
   const appStatus = useSelector((state: RootStateType) => state.app.status
   )
 
-  const displayValue = !value || (appStatus !== 'idle')? '' : value
+  const displayToValue = !value || (appStatus !== 'idle') ? '' : value
 
   const setCurrency = (field: FieldType) => (currency: string) => {
     dispatch(selectCurrency({field, value: currency}));
@@ -50,7 +46,10 @@ const InputField = ({
 
   return (
     <div className={`field ${fieldType}`}>
-      <input value={fieldType === 'from'? value : displayValue} type="number" step="any" {...restProps} />
+      <input value={fieldType === 'from'? value : displayToValue}
+             type="number"
+             step="any"
+             {...restProps} />
       <div
         onClick={() => setShowDropdown(!showDropdown)}
         className={'selectCurrency'}
@@ -73,10 +72,10 @@ const InputField = ({
       </div>
       {showDropdown && (
         <SearchDropdown
-          onBlurCallback={() => setShowDropdown(false)}
+          fieldType={fieldType}
           selectedCurr={curr}
+          onBlurCallback={() => setShowDropdown(false)}
           setCurrencyCallback={setCurrency(fieldType)}
-          findCurrenciesCallback={findCurrenciesCallback}
         />
       )}
     </div>

@@ -78,7 +78,8 @@ export const updateDataThunk =
       if (showLoader) {
         dispatch(setAppStatus({status: 'loading'}));
       }
-      const {from, to, amount} = getState().currencies;
+      const {from, to} = getState().currencies;
+      const amount = +getState().currencies.amount;
       const {minAmount} = await exchangeAPI.getMinimalExchangeAmount(
         `${from}_${to}`
       );

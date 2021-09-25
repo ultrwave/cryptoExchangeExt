@@ -1,85 +1,30 @@
 import * as React from 'react';
-import {ChangeEvent, useEffect, useState} from 'react';
+import {ChangeEvent} from 'react';
 import './styles.scss';
-import {useDispatch, useSelector} from 'react-redux';
-import {
-  getEstimateAmountThunk,
-  setAmount,
-  switchCurrencies,
-} from '../redux/currencies-reducer';
-import {RootStateType} from '../redux/store';
 import InputField from './InputField/InputField';
-import {updateDataThunk} from '../redux/app-reducer';
+import {AmountDisplayType} from '../redux/currencies-reducer';
 
-const Popup: React.FC = () => {
-  const dispatch = useDispatch();
-  const availableCurrencies = useSelector(
-    (state: RootStateType) => state.currencies.availableCurrencies
-  );
+type PopUpPropsType = {
+  amount: AmountDisplayType
+  estimatedAmount: number
+  validInput: boolean
+  error: string | null
+  onClickSwap(): void
+  fromInputCallbacks: {
+    onChange(e: ChangeEvent<HTMLInputElement>): void
+    onKeyPress(e: React.KeyboardEvent): void
+    onBlur(): void
+  }
+}
 
-  const [render, setRender] = useState(false);
-  const amount = useSelector((state: RootStateType) => state.currencies.amount);
-  const minimalAmount = useSelector(
-    (state: RootStateType) => state.currencies.minAmount
-  );
-
-  const estimatedAmount = useSelector(
-    (state: RootStateType) => state.currencies.estAmount
-  );
-
-  const error = useSelector((state: RootStateType) => state.app.error);
-
-  const validInput = amount >= minimalAmount;
-  const showEstimate = validInput ? estimatedAmount : 0;
-
-  const findCurrenciesCallback = (searchValue: string) => {
-    const results = [];
-    for (let i = 0; i < availableCurrencies.length; i += 1) {
-      const curr = availableCurrencies[i];
-      if (`${curr.name} ${curr.ticker}`.toLowerCase().includes(searchValue.toLowerCase())) {
-        results.push(curr);
-      }
-      if (results.length === 3) {
-        return results;
-      }
-    }
-    return results;
-  };
-
-  let timeoutId: number;
-  useEffect(() => {
-    if (amount && render) {
-      timeoutId = +setTimeout(() => dispatch(getEstimateAmountThunk()), 150);
-    }
-    setRender(!!amount);
-    return () => clearTimeout(timeoutId);
-  }, [amount]);
-
-  const onChangeCallback = (e: ChangeEvent<HTMLInputElement>) => {
-    clearTimeout(timeoutId)
-    dispatch(setAmount({amount: Number(e.currentTarget.value)}));
-  };
-
-  const onKeyPress = (e: React.KeyboardEvent) => {
-    clearTimeout(timeoutId)
-    e.key === 'Enter' && dispatch(getEstimateAmountThunk());
-  };
-
-  const onClickSwap = () => {
-    dispatch(switchCurrencies());
-    dispatch(updateDataThunk());
-  };
-
-  const fromInputProps = {
-    onChange: onChangeCallback,
-    onKeyPress,
-    onBlur: () => {
-      clearTimeout(timeoutId)
-      dispatch(getEstimateAmountThunk())
-    }
-  };
-
-  const toInputProps = {readOnly: true};
+const Popup = ({
+  amount,
+  estimatedAmount,
+  validInput,
+  error,
+  onClickSwap,
+  fromInputCallbacks,
+}: PopUpPropsType): JSX.Element => {
 
   return (
     <section id="popup">
@@ -88,8 +33,7 @@ const Popup: React.FC = () => {
       <InputField
         fieldType={'from'}
         value={amount}
-        findCurrenciesCallback={findCurrenciesCallback}
-        {...fromInputProps}
+        {...fromInputCallbacks}
       />
       <img
         className={'swap'}
@@ -101,9 +45,8 @@ const Popup: React.FC = () => {
       />
       <InputField
         fieldType={'to'}
-        value={showEstimate}
-        findCurrenciesCallback={findCurrenciesCallback}
-        {...toInputProps}
+        value={validInput ? estimatedAmount : 0}
+        readOnly={true}
       />
       {validInput || <div className={'inputCross'} />}
       <div className={'field address'}>
