@@ -1,5 +1,4 @@
-import {AppThunk} from '../types/types';
-import {CurrencyResponseType} from './currencies-reducer';
+import {AppThunk, CurrencyResponseType, SearchActionTypes} from '../types/types';
 
 const SET_SEARCH_ITEMS = 'cryptoExchange/search/SET_SEARCH_ITEMS';
 
@@ -13,11 +12,9 @@ const initialState: PageStateType = {
   to: [],
 };
 
-export type ActionTypes = ReturnType<typeof setSearchItems>;
-
 const searchReducer = (
   state: PageStateType = initialState,
-  action: ActionTypes
+  action: SearchActionTypes
 ): PageStateType => {
   switch (action.type) {
     case SET_SEARCH_ITEMS: {
@@ -36,18 +33,24 @@ export const setSearchItems = (payload: {
 
 // Thunks
 
-export const findCurrenciesThunk = (field: 'from' | 'to', searchValue: string): AppThunk => (dispatch, getState)  => {
-  const searchItems = []
-  const {availableCurrencies} = getState().currencies
-  let i = 0
-  while ((searchItems.length < 3 && i < availableCurrencies.length)) {
-    const curr = availableCurrencies[i];
-    if (`${curr.name} ${curr.ticker}`.toLowerCase().includes(searchValue.toLowerCase())) {
-      searchItems.push(curr);
+export const findCurrenciesThunk =
+  (field: 'from' | 'to', searchValue: string): AppThunk =>
+  (dispatch, getState) => {
+    const searchItems = [];
+    const {availableCurrencies} = getState().currencies;
+    let i = 0;
+    while (searchItems.length < 3 && i < availableCurrencies.length) {
+      const curr = availableCurrencies[i];
+      if (
+        `${curr.name} ${curr.ticker}`
+          .toLowerCase()
+          .includes(searchValue.toLowerCase())
+      ) {
+        searchItems.push(curr);
+      }
+      i += 1;
     }
-    i += 1
-  }
-  dispatch(setSearchItems({field, searchItems}))
-};
+    dispatch(setSearchItems({field, searchItems}));
+  };
 
 export default searchReducer;

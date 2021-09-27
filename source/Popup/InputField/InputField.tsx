@@ -46,7 +46,7 @@ const InputField = ({
 
   return (
     <div className={`field ${fieldType}`}>
-      <input value={fieldType === 'from'? value : displayToValue}
+      <input value={fieldType === 'from'? Number(value).toString() : displayToValue}
              type="number"
              step="any"
              {...restProps} />

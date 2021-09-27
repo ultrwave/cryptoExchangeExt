@@ -1,4 +1,4 @@
-import {AppThunk} from '../types/types';
+import {AppActionTypes, AppThunk} from '../types/types';
 import {
   getEstimatedAmountThunk,
   getMinimalAmountThunk,
@@ -20,13 +20,9 @@ const initialState: PageStateType = {
   status: 'loading',
 };
 
-export type ActionTypes =
-  | ReturnType<typeof setError>
-  | ReturnType<typeof setAppStatus>;
-
 const appReducer = (
   state: PageStateType = initialState,
-  action: ActionTypes
+  action: AppActionTypes
 ): PageStateType => {
   switch (action.type) {
     case SET_ERROR:
@@ -48,6 +44,21 @@ export const setAppStatus = (payload: {status: 'loading' | 'idle'}) =>
 
 // Thunks
 
+export const handleErrorThunk =
+  (err: {message?: string}): AppThunk =>
+  (dispatch) => {
+    let error: string;
+    if (err.message === 'deposit_too_small') {
+      error = 'Deposit too small';
+    } else if (err.message === 'null_amount') {
+      error = 'This pair is disabled now';
+    } else {
+      error = 'Network error';
+    }
+    console.warn(err);
+    dispatch(setError({error}));
+  };
+
 export const initAppThunk = (): AppThunk => async (dispatch, getState) => {
   dispatch(setAppStatus({status: 'loading'}));
   try {
@@ -57,8 +68,7 @@ export const initAppThunk = (): AppThunk => async (dispatch, getState) => {
     dispatch(setAmount({amount: getState().currencies.minAmount}));
     await dispatch(getEstimatedAmountThunk());
   } catch (err) {
-    console.warn(err);
-    dispatch(setError({error: 'Network error'}));
+    dispatch(handleErrorThunk(err));
   } finally {
     dispatch(setAppStatus({status: 'idle'}));
   }
@@ -66,22 +76,16 @@ export const initAppThunk = (): AppThunk => async (dispatch, getState) => {
 
 export const requestNewDataThunk =
   (showLoader = true): AppThunk =>
-  async (dispatch, getState) => {
+  async (dispatch) => {
     dispatch(setError({error: null}));
     try {
       if (showLoader) {
         dispatch(setAppStatus({status: 'loading'}));
       }
-      const amount = +getState().currencies.amount;
       await dispatch(getMinimalAmountThunk());
-      const {minAmount} = getState().currencies;
-      if (amount < minAmount) {
-        dispatch(setAmount({amount: minAmount}));
-      }
       await dispatch(getEstimatedAmountThunk());
     } catch (err) {
-      console.warn(err);
-      dispatch(setError({error: 'Network error'}));
+      dispatch(handleErrorThunk(err));
     } finally {
       dispatch(setAppStatus({status: 'idle'}));
     }

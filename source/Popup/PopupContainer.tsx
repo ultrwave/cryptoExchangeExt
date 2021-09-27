@@ -27,8 +27,10 @@ const PopupContainer: React.FC = () => {
   );
 
   const error = useSelector((state: RootStateType) => state.app.error);
-
   const validInput = +amount >= minimalAmount;
+  if (!validInput && render) {
+    dispatch(setError({error: 'Deposit too small'}))
+  }
 
   let timeoutId: number;
   useEffect(() => {

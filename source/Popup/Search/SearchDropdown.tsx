@@ -4,7 +4,7 @@ import DropdownItem from './DropdownItem';
 import {findCurrenciesThunk} from '../../redux/search-reducer';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootStateType} from '../../redux/store';
-import {CurrencyResponseType} from '../../redux/currencies-reducer';
+import {CurrencyResponseType} from '../../types/types';
 
 type DropdownPropsType = {
   fieldType: 'from' | 'to'

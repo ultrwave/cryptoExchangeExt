@@ -17,10 +17,16 @@ export const exchangeAPI = {
     return instance
       .get(`min-amount/${from_to}?api_key=${api_key}`)
       .then((response) => response.data)
+      .catch(e => {
+        throw(new Error(e.response.data.error))
+      })
   },
   getEstimatedExchangeAmount(send_amount: number, from_to: string, api_key: string = APIKey) {
     return instance
       .get(`exchange-amount/${send_amount}/${from_to}/?api_key=${api_key}`)
       .then((response) => response.data)
+      .catch(e => {
+        throw(new Error(e.response.data.error))
+      })
   },
 };
