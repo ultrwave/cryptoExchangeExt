@@ -13,7 +13,6 @@ type PopUpPropsType = {
   fromInputCallbacks: {
     onChange(e: ChangeEvent<HTMLInputElement>): void
     onKeyPress(e: React.KeyboardEvent): void
-    onBlur(): void
   }
 }
 

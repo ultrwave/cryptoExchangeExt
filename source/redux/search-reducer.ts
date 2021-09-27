@@ -4,17 +4,16 @@ import {CurrencyResponseType} from './currencies-reducer';
 const SET_SEARCH_ITEMS = 'cryptoExchange/search/SET_SEARCH_ITEMS';
 
 type PageStateType = {
-  from: Array<CurrencyResponseType>
-  to: Array<CurrencyResponseType>
+  from: Array<CurrencyResponseType>;
+  to: Array<CurrencyResponseType>;
 };
 
 const initialState: PageStateType = {
   from: [],
-  to: []
+  to: [],
 };
 
-export type ActionTypes =
-  | ReturnType<typeof setSearchItems>
+export type ActionTypes = ReturnType<typeof setSearchItems>;
 
 const searchReducer = (
   state: PageStateType = initialState,
@@ -30,8 +29,10 @@ const searchReducer = (
   }
 };
 
-export const setSearchItems = (payload: {field: 'from' | 'to', searchItems: CurrencyResponseType[]}) =>
-  ({type: SET_SEARCH_ITEMS, payload} as const);
+export const setSearchItems = (payload: {
+  field: 'from' | 'to';
+  searchItems: CurrencyResponseType[];
+}) => ({type: SET_SEARCH_ITEMS, payload} as const);
 
 // Thunks
 

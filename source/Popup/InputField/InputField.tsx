@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootStateType} from '../../redux/store';
 import SearchDropdown from '../Search/SearchDropdown';
 import {AmountDisplayType, selectCurrency} from '../../redux/currencies-reducer';
-import {updateDataThunk} from '../../redux/app-reducer';
+import {requestNewDataThunk} from '../../redux/app-reducer';
 
 type FieldType = 'from' | 'to';
 
@@ -33,7 +33,7 @@ const InputField = ({
 
   const setCurrency = (field: FieldType) => (currency: string) => {
     dispatch(selectCurrency({field, value: currency}));
-    dispatch(updateDataThunk())
+    dispatch(requestNewDataThunk())
   }
 
   const currencies = useSelector(

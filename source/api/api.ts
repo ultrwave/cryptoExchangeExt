@@ -11,19 +11,16 @@ export const exchangeAPI = {
   getCurrencies(active = true, fixedRate = true) {
     return instance
       .get(`currencies?active=${active}&fixedRate=${fixedRate}`)
-      .then((response) => response.data);
+      .then((response) => response.data)
   },
   getMinimalExchangeAmount(from_to: string, api_key: string = APIKey) {
     return instance
       .get(`min-amount/${from_to}?api_key=${api_key}`)
-      .then((response) => {
-        return response.data})
-      .catch(e => console.log(e));
+      .then((response) => response.data)
   },
   getEstimatedExchangeAmount(send_amount: number, from_to: string, api_key: string = APIKey) {
     return instance
       .get(`exchange-amount/${send_amount}/${from_to}/?api_key=${api_key}`)
-      .then((response) => response.data);
+      .then((response) => response.data)
   },
-
 };

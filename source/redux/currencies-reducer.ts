@@ -50,7 +50,7 @@ export type ActionTypes =
 
 const currenciesReducer = (
   state: PageStateType = initialState,
-  action: ActionTypes
+  action: ActionTypes,
 ): PageStateType => {
   switch (action.type) {
     case SET_CURRENCIES:
@@ -74,7 +74,7 @@ const currenciesReducer = (
     }
 
     case SET_AMOUNT: {
-      const {amount} = action.payload
+      const {amount} = action.payload;
       return {...state, amount};
     }
 
@@ -110,33 +110,42 @@ export const setEstimatedAmount = (payload: {estAmount: number}) =>
 
 // Thunks
 
-export const getCurrenciesThunk = (): AppThunk => async (dispatch) => {
-  const currencies = await exchangeAPI.getCurrencies();
-  dispatch(setCurrencies({currencies}));
-};
-
-export const getEstimateAmountThunk =
+export const getMinimalAmountThunk =
   (): AppThunk => async (dispatch, getState) => {
-    const {from, to, minAmount} = getState().currencies;
-    const amount = +getState().currencies.amount;
-    dispatch(setError({error: null}));
+    const {from, to} = getState().currencies;
     try {
-      if (amount < minAmount) {
-        dispatch(setError({error: 'Too small deposit'}));
+      const response = await exchangeAPI.getMinimalExchangeAmount( `${from}_${to}`)
+      const {minAmount} = response;
+      if (minAmount) {
+        return dispatch(setMinimalAmount({minAmount}));
       }
-      const response = await exchangeAPI.getEstimatedExchangeAmount(
-        amount,
-        `${from}_${to}`
-      );
-      const estAmount = response.estimatedAmount;
-      if (estAmount) {
-        dispatch(setEstimatedAmount({estAmount}));
-      } else if (estAmount === null) {
-        dispatch(setError({error: 'this pair is disabled now'}))
+      if (minAmount === null) {
+        throw new Error('this pair is disabled now');
       }
     } catch (err) {
-      console.warn(err)
-      dispatch(setError({error: 'Error'}));
+      dispatch(setError({error: err.message}));
+      return Promise.reject()
+    }
+  };
+
+export const getEstimatedAmountThunk =
+  (): AppThunk => async (dispatch, getState) => {
+    const {from, to} = getState().currencies;
+    const amount = +getState().currencies.amount;
+    let response: any
+    try {
+      response = await exchangeAPI.getEstimatedExchangeAmount(amount, `${from}_${to}`)
+      const estAmount = response.estimatedAmount;
+      if (estAmount) {
+        return dispatch(setEstimatedAmount({estAmount}));
+      }
+      if (estAmount === null) {
+        throw new Error('this pair is disabled now');
+      }
+    } catch (err) {
+      console.dir(err);
+      dispatch(setError({error: err.message || 'Network error'}));
+      return Promise.reject('123')
     }
   };
 

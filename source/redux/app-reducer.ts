@@ -1,9 +1,9 @@
 import {AppThunk} from '../types/types';
 import {
+  getEstimatedAmountThunk,
+  getMinimalAmountThunk,
   setAmount,
   setCurrencies,
-  setEstimatedAmount,
-  setMinimalAmount,
 } from './currencies-reducer';
 import {exchangeAPI} from '../api/api';
 
@@ -48,29 +48,23 @@ export const setAppStatus = (payload: {status: 'loading' | 'idle'}) =>
 
 // Thunks
 
-export const initAppThunk = (): AppThunk => async (dispatch) => {
+export const initAppThunk = (): AppThunk => async (dispatch, getState) => {
   dispatch(setAppStatus({status: 'loading'}));
   try {
     const currencies = await exchangeAPI.getCurrencies();
     dispatch(setCurrencies({currencies}));
-    const {minAmount} = await exchangeAPI.getMinimalExchangeAmount('btc_eth');
-    dispatch(setAmount({amount: minAmount}));
-    dispatch(setMinimalAmount({minAmount}));
-    const response = await exchangeAPI.getEstimatedExchangeAmount(
-      minAmount,
-      'btc_eth'
-    );
-    const estAmount = response.estimatedAmount;
-    dispatch(setEstimatedAmount({estAmount}));
-    dispatch(setError({error: null}));
-  } catch (error) {
-    dispatch(setError({error: error.message}));
+    await dispatch(getMinimalAmountThunk());
+    dispatch(setAmount({amount: getState().currencies.minAmount}));
+    await dispatch(getEstimatedAmountThunk());
+  } catch (err) {
+    console.warn(err);
+    dispatch(setError({error: 'Network error'}));
   } finally {
     dispatch(setAppStatus({status: 'idle'}));
   }
 };
 
-export const updateDataThunk =
+export const requestNewDataThunk =
   (showLoader = true): AppThunk =>
   async (dispatch, getState) => {
     dispatch(setError({error: null}));
@@ -78,30 +72,16 @@ export const updateDataThunk =
       if (showLoader) {
         dispatch(setAppStatus({status: 'loading'}));
       }
-      const {from, to} = getState().currencies;
       const amount = +getState().currencies.amount;
-      const {minAmount} = await exchangeAPI.getMinimalExchangeAmount(
-        `${from}_${to}`
-      );
-      if (minAmount) {
-        dispatch(setMinimalAmount({minAmount}));
-        if (amount < minAmount) {
-          dispatch(setAmount({amount: minAmount}));
-        }
-        const response = await exchangeAPI.getEstimatedExchangeAmount(
-          Math.max(amount, minAmount),
-          `${from}_${to}`
-        );
-        if (response) {
-          const estAmount = response.estimatedAmount;
-          dispatch(setEstimatedAmount({estAmount}));
-        }
-      } else if (minAmount === null) {
-        dispatch(setError({error: 'this pair is disabled now'}));
+      await dispatch(getMinimalAmountThunk());
+      const {minAmount} = getState().currencies;
+      if (amount < minAmount) {
+        dispatch(setAmount({amount: minAmount}));
       }
+      await dispatch(getEstimatedAmountThunk());
     } catch (err) {
-      console.warn(err)
-      dispatch(setError({error: 'Error'}));
+      console.warn(err);
+      dispatch(setError({error: 'Network error'}));
     } finally {
       dispatch(setAppStatus({status: 'idle'}));
     }

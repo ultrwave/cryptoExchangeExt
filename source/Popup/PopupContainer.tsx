@@ -2,11 +2,11 @@ import * as React from 'react';
 import {ChangeEvent, useEffect, useState} from 'react';
 import './styles.scss';
 import {useDispatch, useSelector} from 'react-redux';
-import {initAppThunk, setError, updateDataThunk} from '../redux/app-reducer';
+import {initAppThunk, setError, requestNewDataThunk} from '../redux/app-reducer';
 import Popup from './Popup';
 import {RootStateType} from '../redux/store';
 import {Loader} from './loader';
-import {getEstimateAmountThunk, setAmount, switchCurrencies} from '../redux/currencies-reducer';
+import {getEstimatedAmountThunk, setAmount, switchCurrencies} from '../redux/currencies-reducer';
 
 const PopupContainer: React.FC = () => {
   const dispatch = useDispatch();
@@ -33,7 +33,7 @@ const PopupContainer: React.FC = () => {
   let timeoutId: number;
   useEffect(() => {
     if (amount && render) {
-      timeoutId = +setTimeout(() => dispatch(getEstimateAmountThunk()), 150);
+      timeoutId = +setTimeout(() => dispatch(getEstimatedAmountThunk()), 150);
     }
     setRender(!!amount);
     return () => clearTimeout(timeoutId);
@@ -48,21 +48,17 @@ const PopupContainer: React.FC = () => {
 
   const onKeyPressCallback = (e: React.KeyboardEvent) => {
     clearTimeout(timeoutId)
-    e.key === 'Enter' && dispatch(getEstimateAmountThunk());
+    e.key === 'Enter' && dispatch(getEstimatedAmountThunk());
   };
 
   const onClickSwapCallback = () => {
     dispatch(switchCurrencies());
-    dispatch(updateDataThunk());
+    dispatch(requestNewDataThunk());
   };
 
   const fromInputCallbacks = {
     onChange: onChangeCallback,
     onKeyPress: onKeyPressCallback,
-    onBlur: () => {
-      clearTimeout(timeoutId)
-      dispatch(getEstimateAmountThunk())
-    }
   };
 
   // loader fadeOut
